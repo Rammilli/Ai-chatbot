@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.env
+data/news_pipeline.db
+data/vector_store/
+src/__pycache__/
+src/pipeline/__pycache__/
+src/rag/__pycache__/
