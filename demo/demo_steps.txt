@@ -1,0 +1,20 @@
+AI Engineering Assessment - Demo Preparation Steps
+==================================================
+
+Please run the following commands in exact order to record your demo video successfully. Do not modify any files during the demonstration.
+
+1. Build the Vector Store (Ingestion)
+   Command: python -m src.rag.build_index
+   * Description: This will run the document loader, structurally chunk the texts, and safely embed them into the local FAISS index.
+
+2. Ask a RAG Question (Retrieval Simulation)
+   Command: python src/rag/ask.py "What is machine learning?"
+   * Description: This simulates querying the Gemini API natively using your created RAG retriever context base.
+
+3. Run the AI Pipeline once (Data extraction, classification, storage)
+   Command: python -m src.pipeline.scheduler
+   * Description: This initiates the 30-minute scheduler loop. It will immediately execute the first run automatically (gathering articles, parsing text, Zero-Shot classifying them, and storing them in SQLite). Once you see the "Stored X new rows" success log, hit Ctrl+C to cancel the scheduler.
+
+4. Rerun the Pipeline for Deduplication Proof
+   Command: python -m src.pipeline.scheduler
+   * Description: Run the exact same scheduler command again. You will see it collect the same initial articles, but the output will log that 0 new articles were inserted. This mathematically proves your deduplication logic and `INSERT OR IGNORE` SQLite schema constraints are actively functioning.

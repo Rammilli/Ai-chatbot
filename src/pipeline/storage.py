@@ -53,10 +53,17 @@ def initialize_database(db_path: Path = DEFAULT_DB_FILE) -> None:
                     parsed_content TEXT,
                     category TEXT NOT NULL,
                     language TEXT,
+                    tags TEXT,
                     hash TEXT UNIQUE
                 )
                 """
             )
+
+            # Backward compatibility for old DBs
+            try:
+                cursor.execute("ALTER TABLE articles ADD COLUMN tags TEXT")
+            except sqlite3.OperationalError:
+                pass
 
             cursor.execute(
                 """
@@ -102,9 +109,10 @@ def insert_article(
                 parsed_content,
                 category,
                 language,
+                tags,
                 hash
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 article.get("title", "Unknown Title"),
@@ -119,6 +127,7 @@ def insert_article(
                 article.get("parsed_content", ""),
                 article.get("category", "uncategorized"),
                 article.get("language", "en"),
+                article.get("tags", ""),
                 article_hash,
             ),
         )
@@ -196,6 +205,7 @@ if __name__ == "__main__":
             "parsed_content": "Sample clean content",
             "category": "technology",
             "language": "en",
+            "tags": "mock, tag, AI",
         }
     ]
 

@@ -28,6 +28,22 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
+def generate_tags(text: str) -> str:
+    """
+    Generate simple comma-separated tags from text.
+    Extracts up to 5 meaningful, unique words.
+    """
+    words = []
+    seen = set()
+    for w in re.split(r'\W+', text.lower()):
+        if len(w) > 3 and w not in seen:
+            seen.add(w)
+            words.append(w)
+            if len(words) == 5:
+                break
+    return ", ".join(words)
+
+
 def extract_article_data(url: str) -> Optional[Dict[str, Any]]:
     """
     Extract full article metadata.
@@ -58,6 +74,7 @@ def extract_article_data(url: str) -> Optional[Dict[str, Any]]:
             "clean_text": cleaned,
             "parsed_content": cleaned,
             "language": "en",
+            "tags": generate_tags(cleaned),
         }
 
     except ArticleException as e:
