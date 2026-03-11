@@ -90,7 +90,7 @@ def classify_articles(
 
     for index, article in enumerate(articles, start=1):
         title = article.get("title", "Unknown Title")
-        content = article.get("parsed_content", "")
+        content = article.get("clean_text", "")
 
         logger.info(f"[{index}/{len(articles)}] {title}")
 

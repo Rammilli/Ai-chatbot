@@ -1,0 +1,26 @@
+Q: What is the current status of the Federal Reserve interest rates?
+
+A: According to recent reports, the Federal Reserve has decided to hold interest rates steady during their latest policy assembly. They did not alter borrowing costs, which caused traders to react favorably, bumping the S&P 500 futures up by half a percent.
+
+Sources:
+bbc-economy.pdf chunk 0
+bbc-economy.pdf chunk 1
+
+
+Q: What is Sora and who created it?
+
+A: Sora is a massive new Generative AI text-to-video model created by OpenAI, led by CEO Sam Altman. It is capable of producing highly photorealistic video scenes from simple text prompts, representing a significant technological leap in computing capabilities.
+
+Sources:
+techcrunch-openai.txt chunk 0
+ai-industry-report.pdf chunk 4
+
+
+Q: Are there any new AI superchips being released?
+
+A: Yes, Nvidia has unveiled their next generation of AI processors known as 'Blackwell'. These new chips are designed to provide up to 30x the performance specifically optimized for Large Language Model (LLM) inference workflows compared to previous generations.
+
+Sources:
+nvidia-blackwell-press.pdf chunk 2
+nvidia-blackwell-press.pdf chunk 5
+techcrunch-hardware.txt chunk 1

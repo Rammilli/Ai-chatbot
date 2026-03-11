@@ -28,9 +28,9 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-def extract_article_content(url: str) -> Optional[str]:
+def extract_article_data(url: str) -> Optional[Dict[str, Any]]:
     """
-    Extract main article text from URL.
+    Extract full article metadata.
     """
     if not url:
         return None
@@ -49,7 +49,16 @@ def extract_article_content(url: str) -> Optional[str]:
             logger.warning(f"No article text extracted from: {url}")
             return None
 
-        return clean_text(article.text)
+        raw_text = article.text
+        cleaned = clean_text(raw_text)
+
+        return {
+            "author": ", ".join(article.authors) if article.authors else "Unknown",
+            "raw_text": raw_text,
+            "clean_text": cleaned,
+            "parsed_content": cleaned,
+            "language": "en",
+        }
 
     except ArticleException as e:
         logger.error(f"Article extraction failed for '{url}': {str(e)}")
@@ -67,7 +76,7 @@ def parse_articles(
     articles: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     """
-    Parse collected articles and enrich with parsed_content.
+    Parse collected articles and enrich metadata.
     """
     logger.info(f"Starting parser for {len(articles)} articles")
 
@@ -86,11 +95,11 @@ def parse_articles(
             logger.warning(f"Skipping article without URL: {title}")
             continue
 
-        parsed_content = extract_article_content(article_url)
+        extracted = extract_article_data(article_url)
 
-        if parsed_content:
+        if extracted:
             enriched_article = article.copy()
-            enriched_article["parsed_content"] = parsed_content
+            enriched_article.update(extracted)
             enriched_articles.append(enriched_article)
 
         else:
@@ -128,7 +137,7 @@ if __name__ == "__main__":
     if parsed:
         print("\nPreview:")
         for key, value in parsed[0].items():
-            if key == "parsed_content":
+            if key in ["parsed_content", "raw_text", "clean_text"]:
                 print(f"{key}: {value[:200]}...")
             else:
                 print(f"{key}: {value}")

@@ -1,3 +1,4 @@
+import hashlib
 import logging
 import sqlite3
 from pathlib import Path
@@ -14,6 +15,13 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_DB_DIR = Path("data")
 DEFAULT_DB_FILE = DEFAULT_DB_DIR / "news_pipeline.db"
+
+
+def generate_hash(text: str) -> str:
+    """
+    Generate SHA256 hash for deduplication support.
+    """
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def initialize_database(db_path: Path = DEFAULT_DB_FILE) -> None:
@@ -39,8 +47,13 @@ def initialize_database(db_path: Path = DEFAULT_DB_FILE) -> None:
                     article_url TEXT UNIQUE NOT NULL,
                     published_date TEXT NOT NULL,
                     collected_date TEXT NOT NULL,
+                    author TEXT,
+                    raw_text TEXT,
+                    clean_text TEXT,
                     parsed_content TEXT,
-                    category TEXT NOT NULL
+                    category TEXT NOT NULL,
+                    language TEXT,
+                    hash TEXT UNIQUE
                 )
                 """
             )
@@ -70,6 +83,10 @@ def insert_article(
     Insert one article safely.
     """
     try:
+        article_hash = generate_hash(
+            article.get("clean_text", "")
+        )
+
         cursor.execute(
             """
             INSERT OR IGNORE INTO articles (
@@ -79,10 +96,15 @@ def insert_article(
                 article_url,
                 published_date,
                 collected_date,
+                author,
+                raw_text,
+                clean_text,
                 parsed_content,
-                category
+                category,
+                language,
+                hash
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 article.get("title", "Unknown Title"),
@@ -91,8 +113,13 @@ def insert_article(
                 article.get("article_url", ""),
                 article.get("published_date", ""),
                 article.get("collected_date", ""),
+                article.get("author", "Unknown"),
+                article.get("raw_text", ""),
+                article.get("clean_text", ""),
                 article.get("parsed_content", ""),
                 article.get("category", "uncategorized"),
+                article.get("language", "en"),
+                article_hash,
             ),
         )
 
@@ -163,8 +190,12 @@ if __name__ == "__main__":
             "article_url": "http://bbc.com/sample-news",
             "published_date": "2024-01-01",
             "collected_date": "2024-01-01",
-            "parsed_content": "Sample content",
+            "author": "Unknown",
+            "raw_text": "Sample raw content",
+            "clean_text": "Sample clean content",
+            "parsed_content": "Sample clean content",
             "category": "technology",
+            "language": "en",
         }
     ]
 
